@@ -1,20 +1,22 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { makeApiCall } from './actions';
 
 class Headlines extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      error: null,
-      isLoaded: false,
-      headlines: []
-    };
   }
 
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch(makeApiCall());
+  }
+  
   render() {
-    const { error, isLoaded, headlines } = this.state;
+    const { error, isLoading, headlines } = this.props;
     if (error) {
       return <React.Fragment>Error: {error.message}</React.Fragment>;
-    } else if (!isLoaded) {
+    } else if (isLoading) {
       return <React.Fragment>Loading...</React.Fragment>;
     } else {
       return (
@@ -32,9 +34,14 @@ class Headlines extends React.Component {
       );
     }
   }
-  componentDidMount() {
-    this.makeApiCall()
+}
+
+const mapStateToProps = state => {
+  return {
+    headlines: state.headlines,
+    isLoading: state.isLoading,
+    error: state.error
   }
 }
 
-export default Headlines;
+export default connect(mapStateToProps)(Headlines);
